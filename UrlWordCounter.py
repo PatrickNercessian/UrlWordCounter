@@ -7,21 +7,23 @@ from bs4 import BeautifulSoup
 import requests
 
 DEPTH_CONST = 1
-COUNTER_FILE_PATH = 'app/CounterFile.txt'
+COUNTER_DIRECTORY_PATH = 'app/'
 
 
 def run():
+    url = input('Input the desired URL to count word occurrences for: ')
+    file_path = '{}/{}.txt'.format(COUNTER_DIRECTORY_PATH, get_file_name_from_url(url))
+    
     use_existing_counter = False
-    if os.path.exists('app/CounterFile.txt'):
-        use_existing_counter = input('Would you like to use your previous URL Word Count? (y/n) ') == 'y'
+    if os.path.exists(file_path):
+        use_existing_counter = input('Would you like to use your previous Word Count for this URL? (y/n) ') == 'y'
 
     if use_existing_counter:
-        counter = read_counter_from_file()
+        counter = read_counter_from_file(file_path)  # Use cached counter
     else:
-        url = input('Input the desired URL to count word occurrences for: ')
         counter = Counter()
-        count_words_in_url(url, counter, set(), DEPTH_CONST)
-        write_counter_to_file(counter)
+        count_words_in_url(url, counter, set(), DEPTH_CONST)  # Populate new counter for URL
+        write_counter_to_file(counter, file_path)  # Cache the serialized counter in file
 
     command = -1
     while command != 3:
@@ -55,8 +57,9 @@ def count_words_in_url(url: str, counter: Counter, visited_urls: set, desired_de
     list_of_words = site_text.lower().split()
     counter.update(list_of_words)
 
+    # Recursively count frequencies for each hyperlink in this webpage until desired depth is reached
     if desired_depth > 0:
-        for link in soup.find_all('a'):  # Repeat for all hyperlinks in this webpage
+        for link in soup.find_all('a'):
             if link.has_attr('href'):
                 link_str = link.get('href')
 
@@ -75,9 +78,9 @@ def print_keywords_from_counter(keywords: list[str], counter: Counter):
             print('\'{}\' does not occur at all.'.format(keyword))
 
 
-def write_counter_to_file(counter: Counter):
-    os.makedirs(os.path.dirname(COUNTER_FILE_PATH), exist_ok=True)
-    file = open('app/CounterFile.txt', 'wb')
+def write_counter_to_file(counter: Counter, file_path: str):
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+    file = open(file_path, 'wb')
     try:
         pickle.dump(counter, file)
     except:
@@ -87,8 +90,8 @@ def write_counter_to_file(counter: Counter):
         file.close()
 
 
-def read_counter_from_file():
-    file = open('app/CounterFile.txt', 'rb')
+def read_counter_from_file(file_path: str):
+    file = open(file_path, 'rb')
     try:
         return pickle.load(file)
     except:
@@ -96,6 +99,10 @@ def read_counter_from_file():
         traceback.print_exc()
     finally:
         file.close()
+
+
+def get_file_name_from_url(url: str):
+    return url.replace('/', 'slash')
 
 
 run()

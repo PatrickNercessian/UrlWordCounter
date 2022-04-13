@@ -2,7 +2,7 @@ services:
   urlwordcounter:
     build: .
     volumes:
-      - counterfile:/app
+      - counterfiles:/app
 
 volumes:
-  counterfile:
+  counterfiles:
