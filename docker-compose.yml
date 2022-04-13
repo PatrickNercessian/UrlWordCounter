@@ -1,0 +1,8 @@
+services:
+  urlwordcounter:
+    build: .
+    volumes:
+      - counterfile:/app
+
+volumes:
+  counterfile:
