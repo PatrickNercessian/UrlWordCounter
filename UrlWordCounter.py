@@ -2,12 +2,12 @@ import argparse
 import traceback
 from collections import Counter
 from os.path import exists
-import requests
 import pickle
 
 from bs4 import BeautifulSoup
+import requests
 
-DEPTH_CONST = 2
+DEPTH_CONST = 1
 
 
 def parse_args():
