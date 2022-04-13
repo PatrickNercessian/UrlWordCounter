@@ -22,8 +22,7 @@ def run():
     args = parse_args()
     if args.url:  # if new URL specified
         counter = Counter()
-        visited_urls = set()
-        count_words_in_url(args.url, counter, visited_urls, DEPTH_CONST)
+        count_words_in_url(args.url, counter, set(), DEPTH_CONST)
         write_counter_to_file(counter)
     elif exists('CounterFile.txt'):  # else if counter cache exists
         counter = read_counter_from_file()
@@ -59,8 +58,9 @@ def count_words_in_url(url: str, counter: Counter, visited_urls: set, desired_de
     list_of_words = site_text.lower().split()
     counter.update(list_of_words)
 
+    # Recursively count frequencies for each hyperlink in this webpage until desired depth is reached
     if desired_depth > 0:
-        for link in soup.find_all('a'):  # Repeat for all hyperlinks in this webpage
+        for link in soup.find_all('a'):
             if link.has_attr('href'):
                 link_str = link.get('href')
 
