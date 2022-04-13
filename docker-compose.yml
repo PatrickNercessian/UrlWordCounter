@@ -1,6 +1,7 @@
 services:
   urlwordcounter:
     build: .
+    image: pjnercessian/urlwordcounter:1.0
     volumes:
       - counterfiles:/app
 
