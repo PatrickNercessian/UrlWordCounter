@@ -1,7 +1,7 @@
 # URL Word Counter
 
 To use Docker:
-> docker-compose up --rm urlwordcounter
+> docker-compose run --rm urlwordcounter
 
 Use this Python Script to count the number of occurences of each word in a web page.
 
